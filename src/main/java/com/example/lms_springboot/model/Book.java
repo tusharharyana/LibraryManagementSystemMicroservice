@@ -21,4 +21,5 @@ public class Book {
     private String publisherId;
     private String locationId;
     private int copiesAvailable;
+
 }

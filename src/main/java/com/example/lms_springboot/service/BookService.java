@@ -36,7 +36,7 @@ public class BookService {
 
 
     public Optional<Book> getBookById(String id) {
-        log.info("Looking for book with ID: {}", id);
+        //log.info("Looking for book with ID: {}", id);
         return bookRepository.findById(id);
     }
 
