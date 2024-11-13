@@ -15,6 +15,4 @@ public class Member {
     private String memberId;
     private String memberName;
     private String memberEmail;
-    private List<String> rentedBookIds;//Check
-
 }

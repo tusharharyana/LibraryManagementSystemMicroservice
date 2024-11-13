@@ -19,11 +19,14 @@ public class BorrowController {
         return ResponseEntity.ok(borrow);
     }
 
-    //GET is used to retrieve data without modifying it.
-    @PostMapping("/return")
+    @PutMapping("/return")
     public ResponseEntity<Borrow> returnBook(@RequestBody Borrow borrowRequest) {
         Borrow borrow = borrowService.returnBook(borrowRequest.getBorrowId());
-        return ResponseEntity.ok(borrow);
+        if (borrow != null) {
+            return ResponseEntity.ok(borrow);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
