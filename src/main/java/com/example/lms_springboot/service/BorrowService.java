@@ -81,20 +81,21 @@ public class BorrowService {
         double price = 0;
 
         if (isLost) {
-            book.setBookQuantity(book.getBookQuantity() - 1);
+
             bookRepository.save(book);
             price = 30 + bookPrice + 15;
             borrow.setBorrowPrice(price);
-            return borrowRepository.save(borrow);
+
         } else {
+
             price = calculatePrice(borrow, (float) bookPrice);
             borrow.setBorrowPrice(price);
 
             book.setBookQuantity(book.getBookQuantity() + 1);
             bookRepository.save(book);
 
-            return borrowRepository.save(borrow);
         }
+        return borrowRepository.save(borrow);
     }
 
     private double calculatePrice(Borrow borrow, float bookPrice) {
@@ -125,4 +126,5 @@ public class BorrowService {
     long diffInMillies = Math.abs(endDate.getTime() - startDate.getTime());
     return TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MICROSECONDS);
     }
+
 }
