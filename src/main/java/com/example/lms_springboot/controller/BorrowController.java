@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/borrows")
 public class BorrowController {
@@ -19,15 +21,29 @@ public class BorrowController {
         return ResponseEntity.ok(borrow);
     }
 
-    @PutMapping("/return")
-    public ResponseEntity<Borrow> returnBook(@RequestBody Borrow borrowRequest) {
-        Borrow borrow = borrowService.returnBook(borrowRequest.getBorrowId());
+    @GetMapping
+    public ResponseEntity<List<Borrow>> getAllBorrows() {
+        List<Borrow> borrows = borrowService.getAllBorrows();
+        return ResponseEntity.ok(borrows);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Borrow> getBorrowById(@PathVariable String id) {
+        Borrow borrow = borrowService.getBorrowById(id);
+        return ResponseEntity.ok(borrow);
+    }
+
+    @PutMapping("/{id}/return")
+    public ResponseEntity<Borrow> returnBook(
+            @PathVariable String id,
+            @RequestParam(defaultValue = "false") boolean isLost) {
+
+        Borrow borrow = borrowService.returnBook(id, isLost);
         if (borrow != null) {
             return ResponseEntity.ok(borrow);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+    }
 
-
-}

@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "author")
 @NoArgsConstructor
 @Data
@@ -14,6 +16,6 @@ public class Author {
     private String id;
     private String name;
     private String biography;
-    private String nationality;
+    private List<String> bookIds;
 
 }

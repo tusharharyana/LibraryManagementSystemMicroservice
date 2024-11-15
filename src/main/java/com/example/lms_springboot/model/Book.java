@@ -15,11 +15,8 @@ public class Book {
     private String bookId;
     private String title;
     private String isbn;
+    private int bookQuantity;
     private List<String> authorIds;
-    private String categoryId;
-    private String publication_date;
-    private String publisherId;
-    private String locationId;
-    private int copiesAvailable;
+    private Float bookPrice;
 
 }
