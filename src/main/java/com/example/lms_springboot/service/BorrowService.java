@@ -26,7 +26,6 @@ public class BorrowService {
         this.borrowRepository = borrowRepository;
     }
 
-
     public Borrow borrowBook(String memberId, String bookId) {
 
         Optional<Book> bookOptional = bookRepository.findById(bookId);
@@ -47,6 +46,8 @@ public class BorrowService {
                 calendar.add(Calendar.DAY_OF_MONTH, 30);
                 Date dueDate = calendar.getTime();
                 borrow.setDueDate(dueDate);
+
+                borrow.setReturnDate(null);
 
                 Borrow savedBorrow = borrowRepository.save(borrow);
                 book.setBookQuantity(book.getBookQuantity() - 1);
@@ -71,34 +72,36 @@ public class BorrowService {
         return borrowRepository.findById(id).orElseThrow(() -> new RuntimeException("Borrow record not found"));
     }
 
+    public Borrow returnBook(String borrowId) {
+        Borrow borrow = borrowRepository.findById(borrowId)
+                .orElseThrow(() -> new RuntimeException("Borrow record not found"));
+        Book book = bookRepository.findById(borrow.getBookId())
+                .orElseThrow(() -> new RuntimeException("Book with ID " + borrowId + " not found"));
 
-    public Borrow returnBook(String borrowId, boolean isLost) {
+        double price = calculatePrice(borrow);
+        borrow.setBorrowPrice(price);
 
-        Borrow borrow = borrowRepository.findById(borrowId).orElseThrow(() -> new RuntimeException("Borrow record not found"));
-        Book book = bookRepository.findById(borrow.getBookId()).orElseThrow(() -> new RuntimeException("Book with ID " + borrowId + " not found"));
+        book.setBookQuantity(book.getBookQuantity() + 1);
+        bookRepository.save(book);
 
-        double bookPrice = book.getBookPrice();
-        double price = 0;
-
-        if (isLost) {
-
-            bookRepository.save(book);
-            price = 30 + bookPrice + 15;
-            borrow.setBorrowPrice(price);
-
-        } else {
-
-            price = calculatePrice(borrow, (float) bookPrice);
-            borrow.setBorrowPrice(price);
-
-            book.setBookQuantity(book.getBookQuantity() + 1);
-            bookRepository.save(book);
-
-        }
+        borrow.setReturnDate(new Date());
         return borrowRepository.save(borrow);
     }
 
-    private double calculatePrice(Borrow borrow, float bookPrice) {
+    public Borrow markAsLost(String borrowId) {
+        Borrow borrow = borrowRepository.findById(borrowId)
+                .orElseThrow(() -> new RuntimeException("Borrow record not found"));
+        Book book = bookRepository.findById(borrow.getBookId())
+                .orElseThrow(() -> new RuntimeException("Book with ID " + borrowId + " not found"));
+
+        double bookPrice = book.getBookPrice();
+        double penalty = 30 + bookPrice + 15;
+        borrow.setBorrowPrice(penalty);
+
+        return borrowRepository.save(borrow);
+    }
+
+    private double calculatePrice(Borrow borrow) {
         Date borrowDate = borrow.getBorrowDate();
         Date dueDate = borrow.getDueDate();
         Date returnDate = new Date();
@@ -106,25 +109,22 @@ public class BorrowService {
         long onTimeDays = getDateDifferenceInDays(borrowDate, dueDate);
         long returnDays = getDateDifferenceInDays(borrowDate, returnDate);
 
-        double price = 0;
-
+        double price;
 
         if (returnDays <= onTimeDays) {
             price = returnDays * 1.0;
         } else {
+            // Overdue return: calculate on-time price + overdue penalty
             long overdueDays = returnDays - onTimeDays;
             price = (onTimeDays * 1.0) + (overdueDays * 1.5);
         }
 
-        price += bookPrice;
-
         return price;
     }
 
-
     private long getDateDifferenceInDays(Date startDate, Date endDate) {
-    long diffInMillies = Math.abs(endDate.getTime() - startDate.getTime());
-    return TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MICROSECONDS);
+    long diffInMilli = Math.abs(endDate.getTime() - startDate.getTime());
+    return TimeUnit.DAYS.convert(diffInMilli, TimeUnit.MICROSECONDS);
     }
 
 }

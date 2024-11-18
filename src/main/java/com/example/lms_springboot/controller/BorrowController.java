@@ -33,15 +33,27 @@ public class BorrowController {
         return ResponseEntity.ok(borrow);
     }
 
-    @PutMapping("/{id}/return")
-    public ResponseEntity<Borrow> returnBook(
-            @PathVariable String id,
-            @RequestParam(defaultValue = "false") boolean isLost) {
+    //Two different actions - Different responsibility from user prospective
+    //Then different apis like return and lost.
+    // resource/action - separate responsibility
 
-        Borrow borrow = borrowService.returnBook(id, isLost);
-        if (borrow != null) {
+    @PutMapping("/{id}/mark-as-lost")
+    public ResponseEntity<Borrow> markAsLost(@PathVariable String id) {
+        try {
+            Borrow borrow = borrowService.markAsLost(id);
             return ResponseEntity.ok(borrow);
-        } else {
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @PutMapping("/{id}/return")
+    public ResponseEntity<Borrow> returnBook(@PathVariable String id) {
+        try {
+            Borrow borrow = borrowService.returnBook(id);
+            return ResponseEntity.ok(borrow);
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }

@@ -18,6 +18,7 @@ public class Borrow {
     private String bookId;
     private Date borrowDate;
     private Date dueDate;
+    private Date returnDate;
     private Double borrowPrice = 0.0;
 
 }
