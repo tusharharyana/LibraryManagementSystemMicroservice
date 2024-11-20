@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/borrows")
+@CrossOrigin(origins = "http://localhost:3000")
 public class BorrowController {
 
     @Autowired
@@ -60,3 +61,9 @@ public class BorrowController {
 
     }
 
+
+    /*
+    Notes:
+    Cron Use
+    Async use in nodejs
+     */
