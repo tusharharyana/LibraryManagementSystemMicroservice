@@ -21,7 +21,7 @@ const App = () => (
           <Routes>
 
               <Route path="/books" element={<BookList />} />
-              <Route path="/books/add-books" element={<AddBook />} />
+              <Route path="/books/add-book" element={<AddBook />} />
               <Route path="/books/update-book/:bookId" element={<UpdateBook />} />
 
               <Route path="/authors" element={<AuthorList />} />

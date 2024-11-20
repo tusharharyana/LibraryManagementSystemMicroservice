@@ -29,8 +29,8 @@ public class AuthorService {
         return authorRepository.findAll();
     }
 
-    public Optional<Author> getAuthorById(String id) {
-        return authorRepository.findById(id);
+    public List<Author> getAuthorsByIds(List<String> ids) {
+        return authorRepository.findAllById(ids);
     }
 
     public Author updateAuthor(String id, Author author) {

@@ -23,16 +23,19 @@ export const deleteAuthor = async (id) => {
 export const updateAuthor = async (id, updatedAuthor) => {
     await axios.put(`${API_URL}/${id}`, updatedAuthor);
 };
-
 export const getAuthorsByIds = async (authorIds) => {
     try {
-        const response = await axios.get(API_URL, {
-            params: { ids: authorIds }
-        });
-        console.log("Authors fetched:", response.data);
-        return response.data;
+        const authors = await Promise.all(
+            authorIds.map(async (id) => {
+                const response = await axios.get(`${API_URL}/${id}`);
+                return response.data;
+            })
+        );
+        console.log("Authors fetched:", authors);
+        return authors;
     } catch (error) {
         console.error("Error fetching authors", error);
         return [];
     }
 };
+

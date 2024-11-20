@@ -28,9 +28,9 @@ public class AuthorController {
     }
 
 
-    @GetMapping("/{id}")
-    public Optional<Author> getAuthorById(@PathVariable String id) {
-        return authorService.getAuthorById(id);
+    @GetMapping("/ids")
+    public List<Author> getAuthorsByIds(@RequestParam List<String> ids) {
+        return authorService.getAuthorsByIds(ids);
     }
 
     @PutMapping("/{id}")

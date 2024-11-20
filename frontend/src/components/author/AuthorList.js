@@ -25,7 +25,7 @@ const AuthorList = () => {
         <div className="container mt-3">
             <h2 className="d-flex justify-content-between align-items-center">
                 Authors
-                <Link to="/add-author" className="btn btn-primary">
+                <Link to="/authors/add-author" className="btn btn-primary">
                     Add Author
                 </Link>
             </h2>
@@ -45,7 +45,7 @@ const AuthorList = () => {
                         <td>{author.biography}</td>
                         <td>{author.bookIds ? author.bookIds.length : 0}</td> {/* Displaying the count of books */}
                         <td>
-                            <Link to={`/update-author/${author.id}`} className="btn btn-info btn-sm mr-2">
+                            <Link to={`/authors/update-author/${author.id}`} className="btn btn-info btn-sm mr-2">
                                 Update
                             </Link>
                             <button

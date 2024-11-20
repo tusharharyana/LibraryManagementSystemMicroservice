@@ -44,7 +44,7 @@ const MemberList = () => {
                         <td>{member.memberEmail}</td>
                         <td>
                             <Link
-                                to={`/update-member/${member.memberId}`}
+                                to={`/members/update-member/${member.memberId}`}
                                 className="btn btn-info btn-sm mr-2"
                             >
                                 Update

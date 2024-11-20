@@ -29,7 +29,7 @@ const BookList = () => {
         <div className="container mt-3">
             <h2 className="d-flex justify-content-between align-items-center">
                 Books
-                <Link to="/add-book" className="btn btn-primary">
+                <Link to="/books/add-book" className="btn btn-primary">
                     Add Book
                 </Link>
             </h2>
@@ -62,7 +62,7 @@ const BookList = () => {
                                 : "No authors"}
                         </td>
                         <td>
-                            <Link to={`/update-book/${book.bookId}`} className="btn btn-info btn-sm mr-2">
+                            <Link to={`/books/update-book/${book.bookId}`} className="btn btn-info btn-sm mr-2">
                                 Update
                             </Link>
                             <button
