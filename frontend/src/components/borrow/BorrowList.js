@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllBorrows, markAsLost, returnBook } from "../../services/borrowService";
+import { getMemberById } from "../../services/memberService";
+import { getBookById } from "../../services/bookService";
 
 const BorrowList = () => {
     const [borrows, setBorrows] = useState([]);
@@ -11,20 +13,33 @@ const BorrowList = () => {
 
     const fetchBorrows = async () => {
         const data = await getAllBorrows();
+
+        const memberPromises = data.map(borrow => getMemberById(borrow.memberId));
+        const bookPromises = data.map(borrow => getBookById(borrow.bookId));
+
+        const members = await Promise.all(memberPromises);
+        const books = await Promise.all(bookPromises);
+
+        data.forEach((borrow, index) => {
+            borrow.memberName = members[index].memberName; // Use memberName from response
+            borrow.bookTitle = books[index].title;         // Use title from response
+        });
+
         setBorrows(data);
     };
+
 
     const handleMarkAsLost = async (id) => {
         if (window.confirm("Are you sure you want to mark this borrow as lost?")) {
             await markAsLost(id);
-            fetchBorrows();
+            await fetchBorrows();
         }
     };
 
     const handleReturnBook = async (id) => {
         if (window.confirm("Are you sure you want to return this book?")) {
             await returnBook(id);
-            fetchBorrows();
+            await fetchBorrows();
         }
     };
 
@@ -32,7 +47,7 @@ const BorrowList = () => {
         <div className="container mt-3">
             <h2 className="d-flex justify-content-between align-items-center">
                 Borrow Records
-                <Link to="/borrows/add-borrow" className="btn btn-primary">
+                <Link to="/borrows/add" className="btn btn-primary">
                     Add Borrow
                 </Link>
             </h2>
@@ -40,8 +55,8 @@ const BorrowList = () => {
                 <thead className="thead-dark">
                 <tr>
                     <th>Borrow ID</th>
-                    <th>Member ID</th>
-                    <th>Book ID</th>
+                    <th>Member Name</th>
+                    <th>Book Title</th>
                     <th>Borrow Date</th>
                     <th>Due Date</th>
                     <th>Return Date</th>
@@ -53,8 +68,8 @@ const BorrowList = () => {
                 {borrows.map((borrow) => (
                     <tr key={borrow.borrowId}>
                         <td>{borrow.borrowId}</td>
-                        <td>{borrow.memberId}</td>
-                        <td>{borrow.bookId}</td>
+                        <td>{borrow.memberName || "Loading..."}</td>
+                        <td>{borrow.bookTitle || "Loading..."}</td>
                         <td>{new Date(borrow.borrowDate).toLocaleDateString()}</td>
                         <td>{new Date(borrow.dueDate).toLocaleDateString()}</td>
                         <td>

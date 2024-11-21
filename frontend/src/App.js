@@ -14,26 +14,31 @@ import AddBorrow from "./components/borrow/AddBorrow";
 import BorrowList from "./components/borrow/BorrowList";
 
 const App = () => (
-    <Router>
+    <Router
+        future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+        }}
+    >
       <div className="d-flex">
         <Navbar />
         <div className="flex-grow-1 p-3">
           <Routes>
 
-              <Route path="/books" element={<BookList />} />
-              <Route path="/books/add-book" element={<AddBook />} />
-              <Route path="/books/update-book/:bookId" element={<UpdateBook />} />
+              <Route path="/books" element={<BookList />}/>
+              <Route path="/books/add" element={<AddBook />} />
+              <Route path="/books/:bookId/update" element={<UpdateBook />} />
 
               <Route path="/authors" element={<AuthorList />} />
-              <Route path="/authors/add-author" element={<AddAuthor />} />
-              <Route path="/authors/update-author/:id" element={<UpdateAuthor />} />
+              <Route path="/authors/add" element={<AddAuthor />} />
+              <Route path="/authors/:id/update" element={<UpdateAuthor />} />
 
               <Route path="/members" element={<MemberList />} />
-              <Route path="/members/add-member" element={<AddMember />} />
-              <Route path="/members/update-member/:id" element={<UpdateMember />} />
+              <Route path="/members/add" element={<AddMember />} />
+              <Route path="/members/:id/update" element={<UpdateMember />} />
 
               <Route path="/borrows" element={<BorrowList />} />
-              <Route path="/borrows/add-borrow" element={<AddBorrow />} />
+              <Route path="/borrows/add" element={<AddBorrow />} />
           </Routes>
         </div>
       </div>

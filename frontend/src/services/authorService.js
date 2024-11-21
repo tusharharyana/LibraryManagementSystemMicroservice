@@ -25,9 +25,11 @@ export const updateAuthor = async (id, updatedAuthor) => {
 };
 export const getAuthorsByIds = async (authorIds) => {
     try {
+        console.log("Fetching authors for IDs:", authorIds);
         const authors = await Promise.all(
             authorIds.map(async (id) => {
                 const response = await axios.get(`${API_URL}/${id}`);
+                console.log("This",response.data);
                 return response.data;
             })
         );

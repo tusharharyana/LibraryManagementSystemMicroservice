@@ -1,17 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { getAllAuthors, deleteAuthor } from "../../services/authorService"; // Service to get authors and delete
+import { getAllAuthors, deleteAuthor, getAuthorsByIds } from "../../services/authorService"; // Service to get authors and delete
 import { Link } from "react-router-dom";
+import TextField from '@mui/material/TextField';
 
 const AuthorList = () => {
     const [authors, setAuthors] = useState([]);
+    const [filteredAuthors, setFilteredAuthors] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
-        fetchAuthors().then(r => "");
+        fetchAuthors();
     }, []);
+
+    const handleSearch = (event) => {
+        const value = event.target.value.toLowerCase();
+        setSearchTerm(value);
+
+        const filtered = authors.filter((author) =>
+            author.name.toLowerCase().includes(value) // Assuming 'author.name' is searchable
+        );
+        setFilteredAuthors(filtered);
+    };
 
     const fetchAuthors = async () => {
         const data = await getAllAuthors();
-        setAuthors(data);
+
+        const authorsWithDetails = await Promise.all(
+            data.map(async (author) => {
+                const authorDetails = await getAuthorsByIds(author.authorIds); // Assuming `authorIds` is an array
+                return { ...author, authors: authorDetails };
+            })
+        );
+
+        setAuthors(authorsWithDetails);
+        setFilteredAuthors(authorsWithDetails);
     };
 
     const handleDelete = async (id) => {
@@ -25,10 +47,20 @@ const AuthorList = () => {
         <div className="container mt-3">
             <h2 className="d-flex justify-content-between align-items-center">
                 Authors
-                <Link to="/authors/add-author" className="btn btn-primary">
+                <Link to="/authors/add" className="btn btn-primary">
                     Add Author
                 </Link>
             </h2>
+
+            <TextField
+                label="Search by Name"
+                variant="outlined"
+                fullWidth
+                className="my-3"
+                value={searchTerm}
+                onChange={handleSearch}
+            />
+
             <table className="table table-bordered table-hover mt-3">
                 <thead className="thead-dark">
                 <tr>
@@ -39,13 +71,13 @@ const AuthorList = () => {
                 </tr>
                 </thead>
                 <tbody>
-                {authors.map((author) => (
+                {filteredAuthors.map((author) => (
                     <tr key={author.id}>
                         <td>{author.name}</td>
                         <td>{author.biography}</td>
                         <td>{author.bookIds ? author.bookIds.length : 0}</td> {/* Displaying the count of books */}
                         <td>
-                            <Link to={`/authors/update-author/${author.id}`} className="btn btn-info btn-sm mr-2">
+                            <Link to={`/authors/${author.id}/update`} className="btn btn-info btn-sm mr-2">
                                 Update
                             </Link>
                             <button

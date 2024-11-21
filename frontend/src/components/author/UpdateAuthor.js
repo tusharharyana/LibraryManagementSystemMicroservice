@@ -12,7 +12,7 @@ const UpdateAuthor = () => {
     const { id } = useParams();
 
     useEffect(() => {
-        fetchAuthor().then(r => "");
+        fetchAuthor();
     }, [id]);
 
     const fetchAuthor = async () => {
@@ -21,7 +21,7 @@ const UpdateAuthor = () => {
             setAuthor(data);
             setName(data.name);
             setBiography(data.biography);
-            setBookIds(data.bookIds.join(", ")); // Assuming bookIds is an array of strings
+            setBookIds(data.bookIds.join(", "));
         } catch (error) {
             setError("Error fetching author details.");
         }
@@ -37,12 +37,12 @@ const UpdateAuthor = () => {
         const updatedAuthor = {
             name,
             biography,
-            bookIds: bookIds.split(",").map((id) => id.trim()) // Convert the string into an array of book IDs
+            bookIds: bookIds.split(",").map((id) => id.trim())
         };
 
         try {
             await updateAuthor(id, updatedAuthor);
-            navigate("/authors"); // Redirect to authors list after successful update
+            navigate("/authors");
         } catch (error) {
             setError("Error updating author. Please try again.");
         }
