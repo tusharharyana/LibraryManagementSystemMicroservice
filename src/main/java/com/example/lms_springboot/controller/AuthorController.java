@@ -3,6 +3,7 @@ package com.example.lms_springboot.controller;
 import com.example.lms_springboot.model.Author;
 import com.example.lms_springboot.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/authors")
-@CrossOrigin(origins = "http://localhost:3000")
 public class AuthorController {
 
     @Autowired
@@ -28,9 +28,10 @@ public class AuthorController {
     }
 
 
-    @GetMapping("/ids")
-    public List<Author> getAuthorsByIds(@RequestParam List<String> ids) {
-        return authorService.getAuthorsByIds(ids);
+    @GetMapping("/{id}")
+    public ResponseEntity<Optional<Author>> getAuthorById(@PathVariable String id) {
+        Optional<Author> author = authorService.getAuthorById(id);
+        return ResponseEntity.ok(author);
     }
 
     @PutMapping("/{id}")

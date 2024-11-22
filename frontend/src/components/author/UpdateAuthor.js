@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAuthorById, updateAuthor } from "../../services/authorService";
+import { getAllBooks } from "../../services/bookService"; // Import the book service to fetch books
 
 const UpdateAuthor = () => {
     const [author, setAuthor] = useState(null);
@@ -8,13 +9,18 @@ const UpdateAuthor = () => {
     const [biography, setBiography] = useState("");
     const [bookIds, setBookIds] = useState("");
     const [error, setError] = useState("");
+    const [books, setBooks] = useState([]); // List of all books
+    const [suggestions, setSuggestions] = useState([]); // Filtered book suggestions
+    const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
     const { id } = useParams();
 
     useEffect(() => {
         fetchAuthor();
+        fetchBooks();
     }, [id]);
 
+    // Fetch author details
     const fetchAuthor = async () => {
         try {
             const data = await getAuthorById(id);
@@ -27,6 +33,44 @@ const UpdateAuthor = () => {
         }
     };
 
+    // Fetch books for suggestions
+    const fetchBooks = async () => {
+        try {
+            const data = await getAllBooks(); // Fetch books from your database
+            setBooks(data);
+        } catch (error) {
+            console.error("Error fetching books:", error);
+        }
+    };
+
+    // Handle book search
+    const handleBookSearch = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+
+        // Filter books based on search term
+        if (value) {
+            const filtered = books.filter((book) =>
+                book.title.toLowerCase().includes(value.toLowerCase())
+            );
+            setSuggestions(filtered);
+        } else {
+            setSuggestions([]);
+        }
+    };
+
+    // Handle book selection
+    const handleBookSelect = (bookId, bookTitle) => {
+        const currentIds = bookIds.split(",").map((id) => id.trim());
+        if (!currentIds.includes(bookId)) {
+            setBookIds([...currentIds, bookId].join(", "));
+        }
+
+        // Clear search and suggestions
+        setSearchTerm("");
+        setSuggestions([]);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!name || !biography) {
@@ -37,7 +81,7 @@ const UpdateAuthor = () => {
         const updatedAuthor = {
             name,
             biography,
-            bookIds: bookIds.split(",").map((id) => id.trim())
+            bookIds: bookIds.split(",").map((id) => id.trim()),
         };
 
         try {
@@ -82,18 +126,39 @@ const UpdateAuthor = () => {
                     </div>
                     <div className="mb-3">
                         <label htmlFor="bookIds" className="form-label">
-                            Book IDs (comma-separated)
+                            Associated Books
                         </label>
                         <input
                             type="text"
-                            id="bookIds"
                             className="form-control"
+                            placeholder="Search books by title"
+                            value={searchTerm}
+                            onChange={handleBookSearch}
+                        />
+                        {suggestions.length > 0 && (
+                            <ul className="list-group mt-2">
+                                {suggestions.map((book) => (
+                                    <li
+                                        key={book.id}
+                                        className="list-group-item list-group-item-action"
+                                        onClick={() => handleBookSelect(book.bookId, book.title)}
+                                        style={{ cursor: "pointer" }}
+                                    >
+                                        {book.title} (ID: {book.bookId})
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        <small className="form-text text-muted">
+                            Selected Book IDs (comma-separated):
+                        </small>
+                        <input
+                            type="text"
+                            id="bookIds"
+                            className="form-control mt-2"
                             value={bookIds}
                             onChange={(e) => setBookIds(e.target.value)}
                         />
-                        <small className="form-text text-muted">
-                            Enter the book IDs this author is associated with, separated by commas.
-                        </small>
                     </div>
                     <button type="submit" className="btn btn-primary">
                         Update Author

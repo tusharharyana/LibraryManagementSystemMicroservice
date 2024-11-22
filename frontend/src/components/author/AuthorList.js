@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllAuthors, deleteAuthor, getAuthorsByIds } from "../../services/authorService"; // Service to get authors and delete
+import {getAllAuthors, deleteAuthor, getAuthorsByIds, getBooksByIds} from "../../services/authorService";
 import { Link } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 
@@ -7,10 +7,12 @@ const AuthorList = () => {
     const [authors, setAuthors] = useState([]);
     const [filteredAuthors, setFilteredAuthors] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-
+    const [booksName, setBookName] = useState([]);
+    var bookIdsArray;
     useEffect(() => {
         fetchAuthors();
-    }, []);
+    },[]);
+
 
     const handleSearch = (event) => {
         const value = event.target.value.toLowerCase();
@@ -22,13 +24,33 @@ const AuthorList = () => {
         setFilteredAuthors(filtered);
     };
 
+    const fetchBookByBookId=async ()=>{
+        const flatBookIdsArray = bookIdsArray.flat().filter((id) => id);
+        console.log("Flattened Book IDs Array:", flatBookIdsArray);
+
+        // Fetch book details for each book ID
+         const books = await Promise.all(
+            flatBookIdsArray.map(async (bookId) => {
+
+                const bookData = await getBooksByIds(bookId);
+                return bookData;
+            })
+        );
+        setBookName(books);
+        console.warn(books);
+    }
     const fetchAuthors = async () => {
         const data = await getAllAuthors();
-
+        console.log(data)
+         bookIdsArray =  data.map((item) => {
+            return item.bookIds;
+         });
+  fetchBookByBookId();
         const authorsWithDetails = await Promise.all(
             data.map(async (author) => {
-                const authorDetails = await getAuthorsByIds(author.authorIds); // Assuming `authorIds` is an array
-                return { ...author, authors: authorDetails };
+                const authorDetails = await getAuthorsByIds(data.authorIds);
+
+                return { ...author, books: authorDetails };
             })
         );
 
@@ -47,9 +69,14 @@ const AuthorList = () => {
         <div className="container mt-3">
             <h2 className="d-flex justify-content-between align-items-center">
                 Authors
-                <Link to="/authors/add" className="btn btn-primary">
-                    Add Author
-                </Link>
+                <div>
+                    <Link to="/books/add" className="btn btn-primary">
+                        Add Book
+                    </Link>
+                    <Link to="/authors/add" className="btn btn-primary ms-2">
+                        Add Author
+                    </Link>
+                </div>
             </h2>
 
             <TextField
@@ -66,16 +93,32 @@ const AuthorList = () => {
                 <tr>
                     <th>Name</th>
                     <th>Biography</th>
-                    <th>Books Count</th>
+                    <th>Books</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                {filteredAuthors.map((author) => (
+                {filteredAuthors.map((author, i) => (
                     <tr key={author.id}>
                         <td>{author.name}</td>
                         <td>{author.biography}</td>
-                        <td>{author.bookIds ? author.bookIds.length : 0}</td> {/* Displaying the count of books */}
+                        <td>
+                            <ul>
+                                {(() => {
+                                    const items = [];
+                                    for (let j = 0; j < author.bookIds.length; j++) {
+                                        const bookId = author.bookIds[j];
+                                        const book = booksName.find((b) => b.bookId === bookId);
+                                        if (book) {
+                                            items.push(<li key={book.bookId}>{book.title}</li>);
+                                        }
+                                    }
+                                    return items;
+                                })()}
+
+                            </ul>
+                        </td>
+
                         <td>
                             <Link to={`/authors/${author.id}/update`} className="btn btn-info btn-sm mr-2">
                                 Update

@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createBook } from "../../services/bookService";
+import { getAllAuthors } from "../../services/authorService";
+import {useNavigate} from "react-router-dom";
 
 const AddBook = () => {
     const [book, setBook] = useState({
@@ -10,16 +12,74 @@ const AddBook = () => {
         authorIds: [],
     });
 
+    const [authors, setAuthors] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
+    const navigate = useNavigate();
+    // Fetch authors on component mount
+    useEffect(() => {
+        const fetchAuthors = async () => {
+            try {
+                const authorList = await getAllAuthors();
+                setAuthors(authorList);
+            } catch (error) {
+                console.error("Error fetching authors:", error);
+            }
+        };
+        fetchAuthors();
+    }, []);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setBook({ ...book, [name]: value });
     };
 
+    const handleAuthorSearch = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+
+        // Filter suggestions based on search term
+        if (value) {
+            const filtered = authors.filter((author) =>
+                author.name.toLowerCase().includes(value.toLowerCase())
+            );
+            setSuggestions(filtered);
+        } else {
+            setSuggestions([]);
+        }
+    };
+
+    const handleAuthorSelect = (authorId, authorName) => {
+        // Add selected author to the list
+        if (!book.authorIds.includes(authorId)) {
+            setBook({
+                ...book,
+                authorIds: [...book.authorIds, authorId],
+            });
+        }
+
+        // Clear search and suggestions
+        setSearchTerm("");
+        setSuggestions([]);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await createBook(book);
-        alert("Book added successfully!");
-        setBook({ title: "", isbn: "", bookQuantity: 0, bookPrice: 0.0, authorIds: [] });
+        try {
+            await createBook(book);
+            alert("Book added successfully!");
+            setBook({
+                title: "",
+                isbn: "",
+                bookQuantity: 0,
+                bookPrice: 0.0,
+                authorIds: [],
+            });
+        } catch (error) {
+            alert("Failed to add the book. Please try again.");
+            console.error("Error adding book:", error);
+        }
+        navigate("/books");
     };
 
     return (
@@ -70,6 +130,45 @@ const AddBook = () => {
                         onChange={handleChange}
                         required
                     />
+                </div>
+                <div className="form-group">
+                    <label>Authors</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Search authors by name"
+                        value={searchTerm}
+                        onChange={handleAuthorSearch}
+                    />
+                    {suggestions.length > 0 && (
+                        <ul className="list-group mt-2">
+                            {suggestions.map((author) => (
+                                <li
+                                    key={author.id}
+                                    className="list-group-item list-group-item-action"
+                                    onClick={() => handleAuthorSelect(author.id, author.name)}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    {author.name}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+                <div className="form-group">
+                    <strong>Selected Authors:</strong>
+                    {book.authorIds.length > 0 && (
+                        <ul className="mt-2">
+                            {book.authorIds.map((authorId) => {
+                                const author = authors.find((a) => a.id === authorId);
+                                return (
+                                    <li key={authorId}>
+                                        {author?.name || `Author ID: ${authorId}`}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
                 </div>
                 <button type="submit" className="btn btn-primary mt-3">
                     Add Book

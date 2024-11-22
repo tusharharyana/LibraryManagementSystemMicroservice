@@ -8,7 +8,7 @@ const BorrowList = () => {
     const [borrows, setBorrows] = useState([]);
 
     useEffect(() => {
-        fetchBorrows().then(r => "");
+        fetchBorrows();
     }, []);
 
     const fetchBorrows = async () => {
@@ -22,7 +22,7 @@ const BorrowList = () => {
 
         data.forEach((borrow, index) => {
             borrow.memberName = members[index].memberName; // Use memberName from response
-            borrow.bookTitle = books[index].title;         // Use title from response
+            borrow.title = books[index].title;         // Use title from response
         });
 
         setBorrows(data);
@@ -69,7 +69,7 @@ const BorrowList = () => {
                     <tr key={borrow.borrowId}>
                         <td>{borrow.borrowId}</td>
                         <td>{borrow.memberName || "Loading..."}</td>
-                        <td>{borrow.bookTitle || "Loading..."}</td>
+                        <td>{borrow.title || "Loading..."}</td>
                         <td>{new Date(borrow.borrowDate).toLocaleDateString()}</td>
                         <td>{new Date(borrow.dueDate).toLocaleDateString()}</td>
                         <td>

@@ -15,12 +15,14 @@ const BookList = () => {
 
     const fetchBooks = async () => {
         const data = await getAllBooks();
+        console.log("Fetched books:", data);
         for (let book of data) {
             book.authors = await getAuthorsByIds(book.authorIds);
         }
         setBooks(data);
         setFilteredBooks(data);
     };
+
 
     const handleSearch = (event) => {
         const value = event.target.value.toLowerCase();

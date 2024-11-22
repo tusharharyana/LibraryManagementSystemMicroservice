@@ -1,13 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createAuthor } from "../../services/authorService";
+import { getAllBooks } from "../../services/bookService"; // Import your API function for fetching books
 import { useNavigate } from "react-router-dom";
+import { Autocomplete, TextField, Button } from "@mui/material";
 
 const AddAuthor = () => {
     const [name, setName] = useState("");
     const [biography, setBiography] = useState("");
-    const [bookIds, setBookIds] = useState("");  // Assuming the user will enter book IDs as a comma-separated string
+    const [selectedBooks, setSelectedBooks] = useState([]); // To store selected books
+    const [books, setBooks] = useState([]); // To store all books fetched from the API
     const [error, setError] = useState("");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchBooks();
+    }, []);
+
+    const fetchBooks = async () => {
+        try {
+            const data = await getAllBooks(); // Assuming this fetches an array of books with `id` and `title`
+            setBooks(data);
+        } catch (error) {
+            console.error("Failed to fetch books", error);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -15,11 +31,9 @@ const AddAuthor = () => {
             setError("Name and biography are required");
             return;
         }
-        const newAuthor = {
-            name,
-            biography,
-            bookIds: bookIds.split(",").map((id) => id.trim()) // Convert the string into an array of book IDs
-        };
+
+        const bookIds = selectedBooks.map((book) => book.bookId); // Extract IDs of selected books
+        const newAuthor = { name, biography, bookIds };
 
         try {
             await createAuthor(newAuthor);
@@ -61,23 +75,28 @@ const AddAuthor = () => {
                     ></textarea>
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="bookIds" className="form-label">
-                        Book IDs (comma-separated)
-                    </label>
-                    <input
-                        type="text"
-                        id="bookIds"
-                        className="form-control"
-                        value={bookIds}
-                        onChange={(e) => setBookIds(e.target.value)}
+                    <label className="form-label">Books</label>
+                    <Autocomplete
+                        multiple
+                        options={books}
+                        getOptionLabel={(option) => `${option.title} (${option.bookId})`} // Show book title with ID
+                        onChange={(event, value) => setSelectedBooks(value)} // Update selected books
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                variant="outlined"
+                                label="Select Books"
+                                placeholder="Search for books"
+                            />
+                        )}
                     />
                     <small className="form-text text-muted">
-                        Enter the book IDs this author is associated with, separated by commas.
+                        Select the books this author is associated with.
                     </small>
                 </div>
-                <button type="submit" className="btn btn-primary">
+                <Button type="submit" variant="contained" color="primary" className="mt-3">
                     Add Author
-                </button>
+                </Button>
             </form>
         </div>
     );

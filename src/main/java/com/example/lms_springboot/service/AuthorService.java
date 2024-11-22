@@ -1,6 +1,7 @@
 package com.example.lms_springboot.service;
 
 import com.example.lms_springboot.model.Author;
+import com.example.lms_springboot.model.Book;
 import com.example.lms_springboot.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,8 @@ public class AuthorService {
         return authorRepository.findAll();
     }
 
-    public List<Author> getAuthorsByIds(List<String> ids) {
-        return authorRepository.findAllById(ids);
+    public Optional<Author> getAuthorById(String id) {
+        return authorRepository.findById(id);
     }
 
     public Author updateAuthor(String id, Author author) {
