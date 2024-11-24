@@ -110,7 +110,7 @@ const AuthorList = () => {
                                         const bookId = author.bookIds[j];
                                         const book = booksName.find((b) => b.bookId === bookId);
                                         if (book) {
-                                            items.push(<li key={book.bookId}>{book.title}</li>);
+                                            items.push(<p key={book.bookId}>{book.title}</p>);
                                         }
                                     }
                                     return items;

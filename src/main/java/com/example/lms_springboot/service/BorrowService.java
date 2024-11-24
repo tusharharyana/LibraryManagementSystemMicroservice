@@ -127,4 +127,7 @@ public class BorrowService {
     return TimeUnit.DAYS.convert(diffInMilli, TimeUnit.MICROSECONDS);
     }
 
+    public void deleteBorrow(String id) {
+        borrowRepository.deleteById(id);
+    }
 }

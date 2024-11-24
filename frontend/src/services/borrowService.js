@@ -26,3 +26,7 @@ export const returnBook = async (id) => {
     const response = await axios.put(`${API_URL}/${id}/return`);
     return response.data;
 };
+
+export const deleteBorrow = async (id) => {
+    return await axios.delete(`${API_URL}/${id}`);
+};

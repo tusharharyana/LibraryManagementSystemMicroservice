@@ -33,6 +33,12 @@ public class BorrowController {
         return ResponseEntity.ok(borrow);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteBorrow(@PathVariable String id) {
+        borrowService.deleteBorrow(id);
+    }
+
+
     //Two different actions - Different responsibility from user prospective
     //Then different apis like return and lost.
     // resource/action - separate responsibility
