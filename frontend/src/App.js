@@ -12,6 +12,7 @@ import AddMember from "./components/member/AddMember";
 import UpdateMember from "./components/member/UpdateMember";
 import AddBorrow from "./components/borrow/AddBorrow";
 import BorrowList from "./components/borrow/BorrowList";
+import Dashboard from "./components/Dashboard";
 
 const App = () => (
     <Router
@@ -24,6 +25,8 @@ const App = () => (
         <Navbar />
         <div className="flex-grow-1 p-3">
           <Routes>
+
+              <Route path="/" element={<Dashboard />} />
 
               <Route path="/books" element={<BookList />}/>
               <Route path="/books/add" element={<AddBook />} />
