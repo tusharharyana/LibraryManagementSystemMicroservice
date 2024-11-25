@@ -109,12 +109,15 @@ public class BorrowService {
         long onTimeDays = getDateDifferenceInDays(borrowDate, dueDate);
         long returnDays = getDateDifferenceInDays(borrowDate, returnDate);
 
+        if (returnDays == 0) {
+            returnDays = 1;
+        }
+
         double price;
 
         if (returnDays <= onTimeDays) {
             price = returnDays * 1.0;
         } else {
-            // Overdue return: calculate on-time price + overdue penalty
             long overdueDays = returnDays - onTimeDays;
             price = (onTimeDays * 1.0) + (overdueDays * 1.5);
         }
@@ -123,8 +126,8 @@ public class BorrowService {
     }
 
     private long getDateDifferenceInDays(Date startDate, Date endDate) {
-    long diffInMilli = Math.abs(endDate.getTime() - startDate.getTime());
-    return TimeUnit.DAYS.convert(diffInMilli, TimeUnit.MICROSECONDS);
+    long diffInMilli = endDate.getTime() - startDate.getTime();
+        return Math.max(0, TimeUnit.MILLISECONDS.toDays(diffInMilli));
     }
 
     public void deleteBorrow(String id) {
