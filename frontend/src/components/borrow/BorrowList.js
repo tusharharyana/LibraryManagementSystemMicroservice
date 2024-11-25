@@ -181,18 +181,19 @@ const BorrowList = () => {
                                         Return Book
                                     </button>
                                     <button
-                                        className="btn btn-warning btn-sm ms-2"
+                                        className="btn btn-danger btn-sm ms-2"
                                         onClick={() => handleMarkAsLost(borrow.borrowId)}
                                         disabled={!!borrow.returnDate || isLost}
                                     >
                                         Mark as Lost
                                     </button>
-                                    <button
-                                        className="btn btn-danger btn-sm ms-2"
-                                        onClick={() => handleDeleteBorrow(borrow.borrowId)}
-                                    >
-                                        Delete
-                                    </button>
+
+                                    {/*<button*/}
+                                    {/*    className="btn btn-danger btn-sm ms-2"*/}
+                                    {/*    onClick={() => handleDeleteBorrow(borrow.borrowId)}*/}
+                                    {/*>*/}
+                                    {/*    Delete*/}
+                                    {/*</button>*/}
                                 </td>
                             </tr>
                         );

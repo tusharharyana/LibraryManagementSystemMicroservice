@@ -70,9 +70,9 @@ const AuthorList = () => {
             <h2 className="d-flex justify-content-between align-items-center">
                 Authors
                 <div>
-                    <Link to="/books/add" className="btn btn-primary">
-                        Add Book
-                    </Link>
+                    {/*<Link to="/books/add" className="btn btn-primary">*/}
+                    {/*    Add Book*/}
+                    {/*</Link>*/}
                     <Link to="/authors/add" className="btn btn-primary ms-2">
                         Add Author
                     </Link>
